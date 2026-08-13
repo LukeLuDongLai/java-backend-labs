@@ -1,4 +1,4 @@
-package com.LukeLuDongLai.eventflow.domain;
+package com.lukeludonglai.eventflow.domain;
 
 public enum EventStatus {
     DRAFT,

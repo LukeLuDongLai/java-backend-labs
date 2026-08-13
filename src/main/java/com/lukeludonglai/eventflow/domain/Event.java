@@ -1,4 +1,4 @@
-package com.LukeLuDongLai.eventflow.domain;
+package com.lukeludonglai.eventflow.domain;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

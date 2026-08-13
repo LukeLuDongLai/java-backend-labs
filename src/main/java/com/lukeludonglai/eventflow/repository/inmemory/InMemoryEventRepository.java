@@ -1,7 +1,7 @@
-package com.LukeLuDongLai.eventflow.repository.inMemory;
+package com.lukeludonglai.eventflow.repository.inmemory;
 
-import com.LukeLuDongLai.eventflow.domain.Event;
-import com.LukeLuDongLai.eventflow.repository.EventRepository;
+import com.lukeludonglai.eventflow.domain.Event;
+import com.lukeludonglai.eventflow.repository.EventRepository;
 
 import java.util.*;
 

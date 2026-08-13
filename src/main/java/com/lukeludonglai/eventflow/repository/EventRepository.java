@@ -1,6 +1,6 @@
-package com.LukeLuDongLai.eventflow.repository;
+package com.lukeludonglai.eventflow.repository;
 
-import com.LukeLuDongLai.eventflow.domain.Event;
+import com.lukeludonglai.eventflow.domain.Event;
 
 import java.util.List;
 import java.util.Optional;

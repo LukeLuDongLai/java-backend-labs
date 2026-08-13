@@ -1,6 +1,6 @@
-package com.LukeLuDongLai.eventflow.repository.inMemory;
+package com.lukeludonglai.eventflow.repository.inmemory;
 
-import com.LukeLuDongLai.eventflow.domain.*;
+import com.lukeludonglai.eventflow.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
