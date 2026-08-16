@@ -301,6 +301,142 @@ class BookingServiceTest {
         );
     }
 
+    @Test
+    void shouldCancelExistingBooking() {
+        Event event = createPublishedFutureEvent(50);
+        eventRepository.save(event);
+
+        Booking booking = bookingService.createBooking(
+                event.getId(),
+                "customer@example.com",
+                3
+        );
+
+        Booking cancelledBooking =
+                bookingService.cancelBooking(booking.getId());
+
+        assertEquals(
+                BookingStatus.CANCELLED,
+                cancelledBooking.getStatus()
+        );
+    }
+
+    @Test
+    void shouldRestoreEventInventoryAfterCancellation() {
+        Event event = createPublishedFutureEvent(50);
+        eventRepository.save(event);
+
+        Booking booking = bookingService.createBooking(
+                event.getId(),
+                "customer@example.com",
+                3
+        );
+
+        assertEquals(47, event.getAvailableTickets());
+
+        bookingService.cancelBooking(booking.getId());
+
+        assertEquals(
+                50,
+                event.getAvailableTickets(),
+                "Cancelled booking should restore reserved tickets"
+        );
+    }
+
+    @Test
+    void shouldRejectCancellationWhenBookingDoesNotExist() {
+        UUID unknownBookingId = UUID.randomUUID();
+
+        assertThrows(
+                BookingNotFoundException.class,
+                () -> bookingService.cancelBooking(unknownBookingId)
+        );
+    }
+
+    @Test
+    void shouldRejectCancellingSameBookingTwice() {
+        Event event = createPublishedFutureEvent(50);
+        eventRepository.save(event);
+
+        Booking booking = bookingService.createBooking(
+                event.getId(),
+                "customer@example.com",
+                3
+        );
+
+        bookingService.cancelBooking(booking.getId());
+
+        assertThrows(
+                BookingAlreadyCancelledException.class,
+                () -> bookingService.cancelBooking(booking.getId())
+        );
+    }
+
+    @Test
+    void shouldPersistCancelledBooking() {
+        Event event = createPublishedFutureEvent(50);
+        eventRepository.save(event);
+
+        Booking booking = bookingService.createBooking(
+                event.getId(),
+                "customer@example.com",
+                3
+        );
+
+        bookingService.cancelBooking(booking.getId());
+
+        Booking storedBooking = bookingRepository
+                .findById(booking.getId())
+                .orElseThrow();
+
+        assertEquals(
+                BookingStatus.CANCELLED,
+                storedBooking.getStatus()
+        );
+    }
+
+    @Test
+    void shouldPersistRestoredEventInventoryAfterCancellation() {
+        Event event = createPublishedFutureEvent(50);
+        eventRepository.save(event);
+
+        Booking booking = bookingService.createBooking(
+                event.getId(),
+                "customer@example.com",
+                3
+        );
+
+        bookingService.cancelBooking(booking.getId());
+
+        Event storedEvent = eventRepository
+                .findById(event.getId())
+                .orElseThrow();
+
+        assertEquals(
+                50,
+                storedEvent.getAvailableTickets()
+        );
+    }
+
+    @Test
+    void shouldRejectCancellationWhenRelatedEventDoesNotExist() {
+        UUID missingEventId = UUID.randomUUID();
+
+        Booking booking = new Booking(
+                missingEventId,
+                "customer@example.com",
+                3,
+                new BigDecimal("42.50")
+        );
+
+        bookingRepository.save(booking);
+
+        assertThrows(
+                EventNotFoundException.class,
+                () -> bookingService.cancelBooking(booking.getId())
+        );
+    }
+
     private static class FixedPricingPolicy implements PricingPolicy {
 
         private final BigDecimal finalTotal;

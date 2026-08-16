@@ -1,6 +1,8 @@
 package com.lukeludonglai.eventflow.service;
 
 import com.lukeludonglai.eventflow.domain.*;
+import com.lukeludonglai.eventflow.exception.BookingAlreadyCancelledException;
+import com.lukeludonglai.eventflow.exception.BookingNotFoundException;
 import com.lukeludonglai.eventflow.exception.EventNotBookableException;
 import com.lukeludonglai.eventflow.exception.EventNotFoundException;
 import com.lukeludonglai.eventflow.pricing.*;
@@ -59,6 +61,16 @@ public class BookingService {
         eventRepository.save(event);
 
         return booking;
+    }
 
+    public Booking cancelBooking(UUID bookingId){
+        Booking booking = this.bookingRepository.findById(bookingId).orElseThrow(()-> new BookingNotFoundException(bookingId));
+        booking.cancel();
+        Event event = eventRepository.findById(booking.getEventId()).orElseThrow(()->new EventNotFoundException(booking.getEventId()));
+        event.releaseTickets(booking.getQuantity());
+        eventRepository.save(event);
+        bookingRepository.save(booking);
+
+        return booking;
     }
 }
