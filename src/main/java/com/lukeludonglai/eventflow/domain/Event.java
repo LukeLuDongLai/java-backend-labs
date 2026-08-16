@@ -1,5 +1,6 @@
 package com.lukeludonglai.eventflow.domain;
 
+import com.lukeludonglai.eventflow.exception.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -53,6 +54,32 @@ public class Event {
         this.capacity = capacity;
     }
 
+    //Service functions
+    public void publish() {
+        this.status = EventStatus.PUBLISHED;
+    }
+
+    public boolean isPublished(){
+        return this.status == EventStatus.PUBLISHED;
+    }
+
+    public void reserveTickets(int quantity) {
+        if (quantity <= 0){
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+        if (quantity > this.availableTickets){
+            throw new InsufficientTicketsException(quantity, this.availableTickets);
+        }
+        this.availableTickets -= quantity;
+    }
+
+    public void releaseTickets(int quantity){
+        if (quantity <= 0){
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+        this.availableTickets += quantity;
+    }
+    //Getters
     public UUID getId() {
         return id;
     }

@@ -1,5 +1,7 @@
 package com.lukeludonglai.eventflow.domain;
 
+import com.lukeludonglai.eventflow.exception.BookingAlreadyCancelledException;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
@@ -45,6 +47,16 @@ public class Booking {
             this.totalPrice = totalPrice;
     }
 
+    //service functions
+    public void cancel(){
+        if (this.status == BookingStatus.CANCELLED){
+            throw new BookingAlreadyCancelledException(this.id);
+        }
+        this.status = BookingStatus.CANCELLED;
+    }
+
+
+    //getters
     public UUID getId() {
         return id;
     }
