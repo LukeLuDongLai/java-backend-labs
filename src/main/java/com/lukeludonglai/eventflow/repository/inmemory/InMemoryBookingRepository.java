@@ -4,9 +4,10 @@ import com.lukeludonglai.eventflow.domain.Booking;
 import com.lukeludonglai.eventflow.repository.BookingRepository;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryBookingRepository implements BookingRepository {
-    private final Map<UUID,Booking> bookings = new HashMap<>();
+    private final Map<UUID,Booking> bookings = new ConcurrentHashMap<>();
 
     @Override
     public Booking save(Booking booking) {

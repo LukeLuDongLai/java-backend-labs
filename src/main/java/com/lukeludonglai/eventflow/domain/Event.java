@@ -63,7 +63,7 @@ public class Event {
         return this.status == EventStatus.PUBLISHED;
     }
 
-    public void reserveTickets(int quantity) {
+    public synchronized void reserveTickets(int quantity) {
         if (quantity <= 0){
             throw new IllegalArgumentException("Quantity must be positive");
         }
@@ -73,7 +73,7 @@ public class Event {
         this.availableTickets -= quantity;
     }
 
-    public void releaseTickets(int quantity){
+    public synchronized void releaseTickets(int quantity){
         if (quantity <= 0){
             throw new IllegalArgumentException("Quantity must be positive");
         }
@@ -108,7 +108,7 @@ public class Event {
         return capacity;
     }
 
-    public int getAvailableTickets() {
+    public synchronized int getAvailableTickets() {
         return availableTickets;
     }
 }
