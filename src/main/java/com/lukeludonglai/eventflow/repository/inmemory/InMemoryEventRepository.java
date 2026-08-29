@@ -4,9 +4,10 @@ import com.lukeludonglai.eventflow.domain.Event;
 import com.lukeludonglai.eventflow.repository.EventRepository;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryEventRepository implements EventRepository {
-    private final Map<UUID, Event> events = new HashMap<>();
+    private final Map<UUID, Event> events = new ConcurrentHashMap<>();
 
     @Override
     public Optional<Event> findById(UUID id) {

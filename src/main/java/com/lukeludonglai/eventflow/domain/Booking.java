@@ -48,7 +48,7 @@ public class Booking {
     }
 
     //service functions
-    public void cancel(){
+    public synchronized void cancel(){
         if (this.status == BookingStatus.CANCELLED){
             throw new BookingAlreadyCancelledException(this.id);
         }
