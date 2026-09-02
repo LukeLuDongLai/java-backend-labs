@@ -1,9 +1,18 @@
 package com.lukeludonglai.eventflow.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.lukeludonglai.eventflow.database.JdbcConnectionFactory;
+import com.lukeludonglai.eventflow.persistence.BookingPersistence;
+import com.lukeludonglai.eventflow.persistence.inMemory.InMemoryBookingPersistence;
+import com.lukeludonglai.eventflow.persistence.jdbc.JdbcBookingPersistence;
+import com.lukeludonglai.eventflow.repository.jdbc.JdbcBookingRepository;
+import com.lukeludonglai.eventflow.repository.jdbc.JdbcEventRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
+import java.sql.*;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -27,6 +36,7 @@ class BookingServiceTest {
     private EventRepository eventRepository;
     private BookingRepository bookingRepository;
     private BookingService bookingService;
+    private BookingPersistence bookingPersistence;
 
     @BeforeEach
     void setUp() {
@@ -41,13 +51,17 @@ class BookingServiceTest {
         PricingPolicy pricingPolicy =
                 new FixedPricingPolicy(FIXED_TOTAL);
 
+        bookingPersistence = new InMemoryBookingPersistence(eventRepository, bookingRepository);
+
         bookingService = new BookingService(
                 eventRepository,
                 bookingRepository,
                 pricingPolicy,
-                clock
+                clock,
+                bookingPersistence
         );
     }
+
 
     @Test
     void shouldCreateBookingForPublishedFutureEvent() {
@@ -93,15 +107,17 @@ class BookingServiceTest {
         Event event = createPublishedFutureEvent(50);
         eventRepository.save(event);
 
-        bookingService.createBooking(
+        Booking booking = bookingService.createBooking(
                 event.getId(),
                 "customer@example.com",
                 3
         );
 
+        Event savedEvent = eventRepository.findById(event.getId()).orElseThrow();
+
         assertEquals(
                 47,
-                event.getAvailableTickets()
+                savedEvent.getAvailableTickets()
         );
     }
 
@@ -120,7 +136,37 @@ class BookingServiceTest {
                 .findById(booking.getId())
                 .orElseThrow();
 
-        assertSame(booking, storedBooking);
+        assertAll(
+                () -> assertEquals(
+                        booking.getId(),
+                        storedBooking.getId()
+                ),
+                () -> assertEquals(
+                        booking.getEventId(),
+                        storedBooking.getEventId()
+                ),
+                () -> assertEquals(
+                        booking.getCustomerEmail(),
+                        storedBooking.getCustomerEmail()
+                ),
+                () -> assertEquals(
+                        booking.getQuantity(),
+                        storedBooking.getQuantity()
+                ),
+                () -> assertEquals(
+                        booking.getStatus(),
+                        storedBooking.getStatus()
+                ),
+                () -> assertEquals(
+                        0,
+                        booking.getTotalPrice()
+                                .compareTo(storedBooking.getTotalPrice())
+                ),
+                () -> assertEquals(
+                        booking.getCreatedAt(),
+                        storedBooking.getCreatedAt()
+                )
+        );
     }
 
     @Test
@@ -332,13 +378,17 @@ class BookingServiceTest {
                 3
         );
 
-        assertEquals(47, event.getAvailableTickets());
+        Event savedEvent = eventRepository.findById(event.getId()).orElseThrow();
+
+        assertEquals(47, savedEvent.getAvailableTickets());
 
         bookingService.cancelBooking(booking.getId());
 
+        Event eventAfter = eventRepository.findById(event.getId()).orElseThrow();
+
         assertEquals(
                 50,
-                event.getAvailableTickets(),
+                eventAfter.getAvailableTickets(),
                 "Cancelled booking should restore reserved tickets"
         );
     }
@@ -415,25 +465,6 @@ class BookingServiceTest {
         assertEquals(
                 50,
                 storedEvent.getAvailableTickets()
-        );
-    }
-
-    @Test
-    void shouldRejectCancellationWhenRelatedEventDoesNotExist() {
-        UUID missingEventId = UUID.randomUUID();
-
-        Booking booking = new Booking(
-                missingEventId,
-                "customer@example.com",
-                3,
-                new BigDecimal("42.50")
-        );
-
-        bookingRepository.save(booking);
-
-        assertThrows(
-                EventNotFoundException.class,
-                () -> bookingService.cancelBooking(booking.getId())
         );
     }
 

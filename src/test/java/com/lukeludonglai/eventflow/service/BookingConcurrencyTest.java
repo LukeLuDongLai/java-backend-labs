@@ -1,21 +1,31 @@
 package com.lukeludonglai.eventflow.service;
 
+import com.lukeludonglai.eventflow.database.JdbcConnectionFactory;
 import com.lukeludonglai.eventflow.domain.Booking;
 import com.lukeludonglai.eventflow.domain.BookingStatus;
 import com.lukeludonglai.eventflow.domain.Event;
 import com.lukeludonglai.eventflow.domain.EventCategory;
 import com.lukeludonglai.eventflow.exception.BookingAlreadyCancelledException;
 import com.lukeludonglai.eventflow.exception.InsufficientTicketsException;
+import com.lukeludonglai.eventflow.persistence.BookingPersistence;
+import com.lukeludonglai.eventflow.persistence.inMemory.InMemoryBookingPersistence;
+import com.lukeludonglai.eventflow.persistence.jdbc.JdbcBookingPersistence;
 import com.lukeludonglai.eventflow.pricing.PriceQuote;
 import com.lukeludonglai.eventflow.pricing.PricingPolicy;
 import com.lukeludonglai.eventflow.repository.BookingRepository;
 import com.lukeludonglai.eventflow.repository.EventRepository;
 import com.lukeludonglai.eventflow.repository.inmemory.InMemoryBookingRepository;
 import com.lukeludonglai.eventflow.repository.inmemory.InMemoryEventRepository;
+import com.lukeludonglai.eventflow.repository.jdbc.JdbcBookingRepository;
+import com.lukeludonglai.eventflow.repository.jdbc.JdbcEventRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -34,11 +44,13 @@ public class BookingConcurrencyTest {
     private EventRepository eventRepository;
     private BookingRepository bookingRepository;
     private BookingService bookingService;
+    private BookingPersistence bookingPersistence;
 
     @BeforeEach
     void setUp() {
         eventRepository = new InMemoryEventRepository();
         bookingRepository = new InMemoryBookingRepository();
+        bookingPersistence = new InMemoryBookingPersistence(eventRepository,bookingRepository);
 
         Clock clock = Clock.fixed(
                 NOW,
@@ -52,7 +64,8 @@ public class BookingConcurrencyTest {
                 eventRepository,
                 bookingRepository,
                 pricingPolicy,
-                clock
+                clock,
+                bookingPersistence
         );
     }
 
@@ -179,9 +192,11 @@ public class BookingConcurrencyTest {
                 5
         );
 
+        Event savedEvent = eventRepository.findById(event.getId()).orElseThrow();
+
         assertEquals(
                 15,
-                event.getAvailableTickets()
+                savedEvent.getAvailableTickets()
         );
 
         int cancellationAttempts = 20;

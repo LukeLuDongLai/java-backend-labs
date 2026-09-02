@@ -104,7 +104,17 @@ M4  Spring Core
 M5+ Spring Boot + REST + Security + Docker
 ```
 
-## Build
+Example database URL:
+
+```text
+jdbc:postgresql://localhost:5432/eventflow
+```
+
+Database credentials are not stored in the repository.
+
+## Build and Test
+
+Run the test suite with:
 
 ```bash
 mvn clean verify
