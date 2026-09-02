@@ -1,19 +1,25 @@
 package com.lukeludonglai.eventflow.app;
 
 import com.lukeludonglai.eventflow.cli.EventFlowCli;
+import com.lukeludonglai.eventflow.database.JdbcConnectionFactory;
 import com.lukeludonglai.eventflow.domain.Event;
 import com.lukeludonglai.eventflow.domain.EventCategory;
+import com.lukeludonglai.eventflow.persistence.BookingPersistence;
+import com.lukeludonglai.eventflow.persistence.jdbc.JdbcBookingPersistence;
 import com.lukeludonglai.eventflow.pricing.PricingPolicy;
 import com.lukeludonglai.eventflow.pricing.StandardPricingPolicy;
 import com.lukeludonglai.eventflow.repository.BookingRepository;
 import com.lukeludonglai.eventflow.repository.EventRepository;
 import com.lukeludonglai.eventflow.repository.inmemory.InMemoryBookingRepository;
 import com.lukeludonglai.eventflow.repository.inmemory.InMemoryEventRepository;
+import com.lukeludonglai.eventflow.repository.jdbc.JdbcBookingRepository;
+import com.lukeludonglai.eventflow.repository.jdbc.JdbcEventRepository;
 import com.lukeludonglai.eventflow.service.BookingService;
 import com.lukeludonglai.eventflow.service.EventSearchService;
 import com.lukeludonglai.eventflow.service.SalesReportService;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -22,9 +28,17 @@ import java.util.Scanner;
 
 public class EventFlowApplication {
 
-    public static void main(String[] args){
-        EventRepository eventRepository = new InMemoryEventRepository();
-        BookingRepository bookingRepository = new InMemoryBookingRepository();
+    public static void main(String[] args) throws Exception{
+        JdbcConnectionFactory connectionFactory =
+                new JdbcConnectionFactory(
+                        System.getenv("DB_URL"),
+                        System.getenv("DB_USER"),
+                        System.getenv("DB_PASSWORD")
+                );
+
+        EventRepository eventRepository = new JdbcEventRepository(connectionFactory);
+        BookingRepository bookingRepository = new JdbcBookingRepository(connectionFactory);
+        BookingPersistence bookingPersistence = new JdbcBookingPersistence(connectionFactory);
         PricingPolicy pricingPolicy = new StandardPricingPolicy();
         Clock clock = Clock.systemUTC();
 
@@ -33,7 +47,8 @@ public class EventFlowApplication {
                         eventRepository,
                         bookingRepository,
                         pricingPolicy,
-                        clock
+                        clock,
+                        bookingPersistence
                 );
 
         EventSearchService eventSearchService =
