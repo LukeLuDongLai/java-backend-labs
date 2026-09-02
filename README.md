@@ -1,58 +1,59 @@
 # Java Backend Labs
 
-A milestone-based Java backend project built to practice backend development by evolving the same application step by step.
+A milestone-based Java backend project that evolves the same application from Core Java to Spring Boot.
 
-The current project is **EventFlow**, a simple event booking system. It started as an in-memory Java application and is gradually being extended with PostgreSQL, JDBC, Hibernate/JPA, Spring, REST APIs, security, and deployment.
+Instead of copying tutorial projects, each milestone upgrades the architecture and infrastructure of **EventFlow**, an event discovery and ticket booking application.
 
 ## EventFlow
 
-EventFlow currently supports:
+Core features:
 
-- Event creation and publishing
 - Event search and sorting
 - Ticket booking and cancellation
-- Pricing rules and discounts
-- Ticket inventory management
+- Pricing and discount rules
+- Inventory management
 - Sales reporting
-- PostgreSQL persistence
-- Transactional booking operations
-- Basic concurrency protection for the in-memory implementation
+- CLI workflows
+- Automated testing
+- Concurrent booking protection
 
 ## Current Milestone
 
-### M3 - Hibernate / JPA 🚧
+### M2 - PostgreSQL + JDBC 🚧
 
-The next step is replacing the hand-written JDBC persistence layer with Hibernate/JPA while keeping the existing domain and service structure.
+Replacing in-memory persistence with PostgreSQL using plain JDBC.
+
+Current focus:
+
+- PostgreSQL schema design
+- `Connection`, `PreparedStatement`, and `ResultSet`
+- JDBC repository implementations
+- SQL constraints and foreign keys
+- Manual transaction management
+- Commit / rollback behavior
 
 ## Completed
 
-### M2 - PostgreSQL + JDBC ✅
-
-- Added PostgreSQL database schema
-- Implemented JDBC repositories for events and bookings
-- Added domain object rehydration from database records
-- Added transaction handling for booking creation and cancellation
-- Added JDBC integration tests
-- Moved application persistence from memory to PostgreSQL
-- Database configuration is provided through environment variables
-
-Release: `v0.2.0`
-
 ### M1 - EventFlow Core ✅
 
-- Core domain model for events and bookings
-- Repository abstractions with in-memory implementations
-- Pricing policy abstraction
-- Event search and sorting
-- Booking and cancellation workflows
+Built the framework-free Java version of EventFlow with:
+
+- Domain-oriented design
+- Repository abstractions
+- In-memory persistence
+- Pricing policies
+- Booking workflows
+- Event search
 - Sales reporting
 - Command-line interface
-- JUnit tests
-- Single-JVM concurrency protection for ticket inventory
+- JUnit 5 tests
+- Single-JVM concurrency protection using `synchronized`, `ConcurrentHashMap`, `ExecutorService`, and `CountDownLatch`
 
 Release: `v0.1.0`
 
 ## Tech Stack
+
+**Current**
 
 - Java 21
 - Maven
@@ -61,7 +62,7 @@ Release: `v0.1.0`
 - JDBC
 - Git / GitHub
 
-Planned:
+**Next**
 
 - Hibernate / JPA
 - Spring Framework
@@ -71,41 +72,36 @@ Planned:
 - Spring Security
 - Docker
 
-## Project Structure
+## Architecture
 
 ```text
-src/main/java/com/lukeludonglai/eventflow
-├── app
-├── cli
-├── database
-├── domain
-├── exception
-├── persistence
-├── pricing
-├── report
-├── repository
-├── search
-└── service
+CLI
+ ↓
+Services
+ ↓
+Domain
+ ↓
+Repository Interfaces
+ ↓
+In-Memory / JDBC Implementations
+ ↓
+PostgreSQL
 ```
 
-The application is separated into domain, service, repository, persistence, and CLI layers so that infrastructure can change without rewriting the core business logic.
+The business layer depends on repository abstractions, allowing persistence to evolve without redesigning the core workflows.
 
-For example, EventFlow started with in-memory repositories and later switched to JDBC/PostgreSQL while keeping most of the service layer unchanged.
-
-## Database
-
-The PostgreSQL schema is stored in:
+## Project Evolution
 
 ```text
-db/schema.sql
-```
-
-The application expects the following environment variables:
-
-```text
-DB_URL
-DB_USER
-DB_PASSWORD
+M1  Java + In-Memory + Testing + Concurrency
+ ↓
+M2  PostgreSQL + JDBC
+ ↓
+M3  Hibernate / JPA
+ ↓
+M4  Spring Core
+ ↓
+M5+ Spring Boot + REST + Security + Docker
 ```
 
 Example database URL:
@@ -124,20 +120,16 @@ Run the test suite with:
 mvn clean verify
 ```
 
-JDBC integration tests require a running PostgreSQL database and the database environment variables to be available to the Maven process.
+## Database Configuration
 
-## Project Evolution
+Database credentials are provided through environment variables and are never committed to Git:
 
 ```text
-M1  Core Java + In-Memory
-        ↓
-M2  PostgreSQL + JDBC
-        ↓
-M3  Hibernate / JPA
-        ↓
-M4  Spring
-        ↓
-M5+ Spring Boot + REST + Security + Docker
+DB_URL
+DB_USER
+DB_PASSWORD
 ```
 
-The goal is to keep evolving the same application instead of creating a new tutorial project for every technology.
+## Status
+
+🚧 M2 - JDBC Persistence in progress
