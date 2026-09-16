@@ -6,14 +6,52 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "bookings")
 public class Booking {
+
+    @Id
     private UUID id;
+
+    @Column(
+            name = "event_Id",
+            nullable = false
+    )
     private UUID eventId;
+
+    @Column(
+            name = "customer_email",
+            nullable = false,
+            length = 320
+    )
     private String customerEmail;
+
+    @Column(nullable = false)
     private int quantity;
+
+    @Column(
+            name = "total_price",
+            nullable = false,
+            precision = 12,
+            scale = 2
+    )
     private BigDecimal totalPrice;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BookingStatus status;
+
+    @Column(
+            name = "created_at",
+            nullable = false
+    )
     private Instant createdAt;
+
+    protected Booking(){
+
+    }
 
     public Booking (
             UUID eventId,
@@ -90,6 +128,7 @@ public class Booking {
         this.createdAt = createdAt;
     }
 
+    // For JDBC
     public static Booking rehydrate(
             UUID id,
             UUID eventId,

@@ -1,18 +1,59 @@
 package com.lukeludonglai.eventflow.domain;
 
 import com.lukeludonglai.eventflow.exception.*;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "events")
 public class Event {
+    @Id
     private UUID id;
+
+    @Column(
+            nullable = false,
+            length = 30
+    )
     private String title;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            nullable = false,
+            length = 30
+    )
     private EventCategory category;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            nullable = false,
+            length = 30
+    )
     private EventStatus status;
+
+    @Column(
+            name = "starts_at",
+            nullable = false
+    )
     private ZonedDateTime startsAt;
+
+    @Column(
+            name = "unit_price",
+            nullable = false,
+            precision = 12,
+            scale = 2
+    )
     private BigDecimal unitPrice;
+
+    @Column(nullable = false)
     private int capacity;
+
+    @Column(
+            name = "available_tickets",
+            nullable = false
+    )
     private int availableTickets;
 
     public Event(
@@ -52,6 +93,10 @@ public class Event {
         this.startsAt = startAt;
         this.unitPrice = unitPrice;
         this.capacity = capacity;
+    }
+
+    protected Event(){
+        // Required by JPA
     }
 
     public static Event rehydrate(

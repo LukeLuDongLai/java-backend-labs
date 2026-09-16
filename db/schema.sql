@@ -1,3 +1,5 @@
+-- Only for M2 JDBC persistence
+
 CREATE TABLE events (
     id UUID PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
