@@ -1,6 +1,7 @@
 package com.lukeludonglai.eventflow.domain;
 
 import com.lukeludonglai.eventflow.database.JpaEntityManagerFactory;
+import com.lukeludonglai.eventflow.helper.TestDataHelper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,10 +30,11 @@ class BookingHibernateTest {
 
     @Test
     void shouldPersistAndLoadBooking() {
-        UUID eventId = UUID.randomUUID();
+        Event event = TestDataHelper.createDefaultEvent();
+
 
         Booking booking = new Booking(
-                eventId,
+                event,
                 "customer@example.com",
                 3,
                 new BigDecimal("42.50")
@@ -44,6 +47,7 @@ class BookingHibernateTest {
 
         try {
             tx.begin();
+            em.persist(event);
             em.persist(booking);
             tx.commit();
 
@@ -58,7 +62,7 @@ class BookingHibernateTest {
                     storedBooking.getId()
             );
             assertEquals(
-                    eventId,
+                    event.getId(),
                     storedBooking.getEventId()
             );
             assertEquals(

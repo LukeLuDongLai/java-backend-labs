@@ -1,6 +1,7 @@
-package com.lukeludonglai.eventflow.domain;
+package com.lukeludonglai.eventflow.database;
 
-import com.lukeludonglai.eventflow.database.JpaEntityManagerFactory;
+import com.lukeludonglai.eventflow.domain.Event;
+import com.lukeludonglai.eventflow.domain.EventCategory;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;

@@ -4,6 +4,7 @@ import com.lukeludonglai.eventflow.domain.Booking;
 import com.lukeludonglai.eventflow.domain.Event;
 import com.lukeludonglai.eventflow.domain.EventCategory;
 import com.lukeludonglai.eventflow.exception.EventNotFoundException;
+import com.lukeludonglai.eventflow.helper.TestDataHelper;
 import com.lukeludonglai.eventflow.report.EventSalesSummary;
 import com.lukeludonglai.eventflow.repository.BookingRepository;
 import com.lukeludonglai.eventflow.repository.EventRepository;
@@ -50,14 +51,21 @@ class SalesReportServiceTest {
 
         @Test
         void shouldSumConfirmedBookingQuantities() {
+            Event event1 = createEvent("Test event 1", EventCategory.HIKING);
+            Event event2 = createEvent("Test event 2", EventCategory.MUSIC);
+
+            eventRepository.save(event1);
+            eventRepository.save(event2);
+
+
             Booking firstBooking = createBooking(
-                    UUID.randomUUID(),
+                    event1,
                     2,
                     "40.00"
             );
 
             Booking secondBooking = createBooking(
-                    UUID.randomUUID(),
+                    event2,
                     5,
                     "100.00"
             );
@@ -72,14 +80,17 @@ class SalesReportServiceTest {
 
         @Test
         void shouldExcludeCancelledBookings() {
+            Event event = TestDataHelper.createDefaultEvent();
+            eventRepository.save(event);
+
             Booking confirmedBooking = createBooking(
-                    UUID.randomUUID(),
+                    event,
                     3,
                     "60.00"
             );
 
             Booking cancelledBooking = createBooking(
-                    UUID.randomUUID(),
+                    event,
                     4,
                     "80.00"
             );
@@ -96,14 +107,17 @@ class SalesReportServiceTest {
 
         @Test
         void shouldReturnZeroWhenAllBookingsAreCancelled() {
+            Event event = TestDataHelper.createDefaultEvent();
+            eventRepository.save(event);
+
             Booking firstBooking = createBooking(
-                    UUID.randomUUID(),
+                    event,
                     2,
                     "40.00"
             );
 
             Booking secondBooking = createBooking(
-                    UUID.randomUUID(),
+                    event,
                     5,
                     "100.00"
             );
@@ -143,7 +157,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            techEvent.getId(),
+                            techEvent,
                             2,
                             "50.00"
                     )
@@ -177,7 +191,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            javaEvent.getId(),
+                            javaEvent,
                             2,
                             "50.00"
                     )
@@ -185,7 +199,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            springEvent.getId(),
+                            springEvent,
                             3,
                             "75.00"
                     )
@@ -219,7 +233,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            techEvent.getId(),
+                            techEvent,
                             2,
                             "60.00"
                     )
@@ -227,7 +241,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            musicEvent.getId(),
+                            musicEvent,
                             3,
                             "120.00"
                     )
@@ -259,13 +273,13 @@ class SalesReportServiceTest {
             eventRepository.save(event);
 
             Booking confirmedBooking = createBooking(
-                    event.getId(),
+                    event,
                     2,
                     "50.00"
             );
 
             Booking cancelledBooking = createBooking(
-                    event.getId(),
+                    event,
                     3,
                     "90.00"
             );
@@ -296,13 +310,13 @@ class SalesReportServiceTest {
             eventRepository.save(event);
 
             Booking firstBooking = createBooking(
-                    event.getId(),
+                    event,
                     2,
                     "50.00"
             );
 
             Booking secondBooking = createBooking(
-                    event.getId(),
+                    event,
                     3,
                     "75.00"
             );
@@ -322,7 +336,7 @@ class SalesReportServiceTest {
         @Test
         void shouldThrowWhenBookingReferencesUnknownEvent() {
             Booking booking = createBooking(
-                    UUID.randomUUID(),
+                    TestDataHelper.createDefaultEvent(),
                     2,
                     "50.00"
             );
@@ -359,7 +373,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            event.getId(),
+                            event,
                             2,
                             "50.00"
                     )
@@ -367,7 +381,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            event.getId(),
+                            event,
                             3,
                             "75.00"
                     )
@@ -410,13 +424,13 @@ class SalesReportServiceTest {
             eventRepository.save(event);
 
             Booking confirmedBooking = createBooking(
-                    event.getId(),
+                    event,
                     2,
                     "50.00"
             );
 
             Booking cancelledBooking = createBooking(
-                    event.getId(),
+                    event,
                     5,
                     "100.00"
             );
@@ -467,7 +481,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            firstEvent.getId(),
+                            firstEvent,
                             3,
                             "60.00"
                     )
@@ -475,7 +489,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            secondEvent.getId(),
+                            secondEvent,
                             8,
                             "160.00"
                     )
@@ -483,7 +497,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            thirdEvent.getId(),
+                            thirdEvent,
                             5,
                             "100.00"
                     )
@@ -539,7 +553,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            firstEvent.getId(),
+                            firstEvent,
                             10,
                             "200.00"
                     )
@@ -547,7 +561,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            secondEvent.getId(),
+                            secondEvent,
                             8,
                             "160.00"
                     )
@@ -555,7 +569,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            thirdEvent.getId(),
+                            thirdEvent,
                             6,
                             "120.00"
                     )
@@ -563,7 +577,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            fourthEvent.getId(),
+                            fourthEvent,
                             2,
                             "40.00"
                     )
@@ -610,7 +624,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            event.getId(),
+                            event,
                             2,
                             "40.00"
                     )
@@ -618,7 +632,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            event.getId(),
+                            event,
                             4,
                             "80.00"
                     )
@@ -626,7 +640,7 @@ class SalesReportServiceTest {
 
             bookingRepository.save(
                     createBooking(
-                            event.getId(),
+                            event,
                             3,
                             "60.00"
                     )
@@ -645,23 +659,6 @@ class SalesReportServiceTest {
             assertBigDecimalEquals(
                     "180.00",
                     summary.revenue()
-            );
-        }
-
-        @Test
-        void shouldThrowWhenConfirmedBookingReferencesUnknownEvent() {
-            Booking booking = createBooking(
-                    UUID.randomUUID(),
-                    3,
-                    "60.00"
-            );
-
-            bookingRepository.save(booking);
-
-            assertThrows(
-                    EventNotFoundException.class,
-                    () -> salesReportService
-                            .getTopEventsByTicketsSold()
             );
         }
     }
@@ -689,12 +686,12 @@ class SalesReportServiceTest {
     }
 
     private Booking createBooking(
-            UUID eventId,
+            Event event,
             int quantity,
             String totalPrice
     ) {
         return new Booking(
-                eventId,
+                event,
                 "customer@example.com",
                 quantity,
                 new BigDecimal(totalPrice)

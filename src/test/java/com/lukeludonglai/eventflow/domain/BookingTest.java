@@ -1,26 +1,36 @@
 package com.lukeludonglai.eventflow.domain;
 
+import com.lukeludonglai.eventflow.helper.TestDataHelper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BookingTest {
+
+    Event event;
+
+    @BeforeEach
+    void setUp(){
+        this.event = TestDataHelper.createDefaultEvent();
+    }
+
     @Test
     void shouldCreateBookingWithValidData() {
-        UUID eventId = UUID.randomUUID();
 
         Booking booking = new Booking(
-                eventId,
+                event,
                 "customer@example.com",
                 3,
                 new BigDecimal("60.00")
         );
 
         assertNotNull(booking.getId());
-        assertEquals(eventId, booking.getEventId());
+        assertEquals(event.getId(), booking.getEventId());
         assertEquals("customer@example.com", booking.getCustomerEmail());
         assertEquals(3, booking.getQuantity());
         assertEquals(new BigDecimal("60.00"), booking.getTotalPrice());
@@ -46,7 +56,7 @@ class BookingTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Booking(
-                        UUID.randomUUID(),
+                        event,
                         null,
                         3,
                         new BigDecimal("60.00")
@@ -59,7 +69,7 @@ class BookingTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Booking(
-                        UUID.randomUUID(),
+                        event,
                         "   ",
                         3,
                         new BigDecimal("60.00")
@@ -72,7 +82,7 @@ class BookingTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Booking(
-                        UUID.randomUUID(),
+                        event,
                         "customer@example.com",
                         0,
                         new BigDecimal("60.00")
@@ -85,7 +95,7 @@ class BookingTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Booking(
-                        UUID.randomUUID(),
+                        event,
                         "customer@example.com",
                         -1,
                         new BigDecimal("60.00")
@@ -98,7 +108,7 @@ class BookingTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Booking(
-                        UUID.randomUUID(),
+                        event,
                         "customer@example.com",
                         3,
                         null
@@ -111,7 +121,7 @@ class BookingTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Booking(
-                        UUID.randomUUID(),
+                        event,
                         "customer@example.com",
                         3,
                         new BigDecimal("-0.01")
@@ -122,7 +132,7 @@ class BookingTest {
     @Test
     void shouldAllowZeroTotalPrice() {
         Booking booking = new Booking(
-                UUID.randomUUID(),
+                event,
                 "customer@example.com",
                 1,
                 BigDecimal.ZERO
@@ -134,7 +144,7 @@ class BookingTest {
     @Test
     void shouldStripWhitespaceFromEmail() {
         Booking booking = new Booking(
-                UUID.randomUUID(),
+                event,
                 "   customer@example.com   ",
                 3,
                 new BigDecimal("60.00")
@@ -145,4 +155,5 @@ class BookingTest {
                 booking.getCustomerEmail()
         );
     }
+
 }

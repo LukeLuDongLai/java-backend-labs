@@ -15,11 +15,15 @@ public class Booking {
     @Id
     private UUID id;
 
-    @Column(
-            name = "event_Id",
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false
+    )
+    @JoinColumn(
+            name = "event_id",
             nullable = false
     )
-    private UUID eventId;
+    private Event event;
 
     @Column(
             name = "customer_email",
@@ -54,13 +58,13 @@ public class Booking {
     }
 
     public Booking (
-            UUID eventId,
+            Event event,
             String email,
             int quantity,
             BigDecimal totalPrice
             ){
-            if (eventId == null) {
-                throw new IllegalArgumentException("Event ID must not be null");
+            if (event == null) {
+                throw new IllegalArgumentException("Event must not be null");
             }
             if (email == null || email.isBlank()){
                 throw new IllegalArgumentException("Email must not be blank");
@@ -79,75 +83,12 @@ public class Booking {
             this.status = BookingStatus.CONFIRMED;
             this.createdAt = Instant.now();
 
-            this.eventId = eventId;
+            this.event = event;
             this.customerEmail = email.strip();
             this.quantity = quantity;
             this.totalPrice = totalPrice;
     }
 
-    private Booking (
-           UUID id,
-           UUID eventId,
-           String customerEmail,
-           int quantity,
-           BigDecimal totalPrice,
-           BookingStatus status,
-           Instant createdAt
-    ){
-        if (id == null){
-            throw new IllegalArgumentException("Booking ID must not be null");
-        }
-        if (eventId == null) {
-            throw new IllegalArgumentException("Event ID must not be null");
-        }
-        if (customerEmail == null || customerEmail.isBlank()){
-            throw new IllegalArgumentException("Email must not be blank");
-        }
-        if(quantity <= 0){
-            throw new IllegalArgumentException("Booking quantity must be positive");
-        }
-        if (totalPrice == null){
-            throw new IllegalArgumentException("Total price must not be null");
-        }
-        if (totalPrice.compareTo(BigDecimal.ZERO) < 0){
-            throw new IllegalArgumentException("Total price must not be negative");
-        }
-        if (status == null) {
-            throw new IllegalArgumentException("Booking status must not be null");
-        }
-        if (createdAt == null) {
-            throw new IllegalArgumentException("Created time must not be null");
-        }
-
-        this.id = id;
-        this.eventId =eventId;
-        this.customerEmail = customerEmail;
-        this.quantity =quantity;
-        this.totalPrice = totalPrice;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
-
-    // For JDBC
-    public static Booking rehydrate(
-            UUID id,
-            UUID eventId,
-            String customerEmail,
-            int quantity,
-            BigDecimal totalPrice,
-            BookingStatus status,
-            Instant createdAt
-    ){
-        return new Booking(
-                id,
-                eventId,
-                customerEmail,
-                quantity,
-                totalPrice,
-                status,
-                createdAt
-        );
-    }
 
     //service functions
     public synchronized void cancel(){
@@ -164,7 +105,11 @@ public class Booking {
     }
 
     public UUID getEventId() {
-        return eventId;
+        return event.getId();
+    }
+
+    public Event getEvent(){
+        return event;
     }
 
     public String getCustomerEmail() {
@@ -186,4 +131,5 @@ public class Booking {
     public Instant getCreatedAt() {
         return createdAt;
     }
+
 }

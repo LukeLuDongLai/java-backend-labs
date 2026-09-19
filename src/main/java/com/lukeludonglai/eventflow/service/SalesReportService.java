@@ -30,7 +30,7 @@ public class SalesReportService {
         return bookingRepository
                 .findAll()
                 .stream()
-                .filter(booking-> booking.getStatus()== BookingStatus.CONFIRMED)
+                .filter(booking-> booking.getStatus() == BookingStatus.CONFIRMED)
                 .mapToInt(Booking::getQuantity)
                 .sum();
     }

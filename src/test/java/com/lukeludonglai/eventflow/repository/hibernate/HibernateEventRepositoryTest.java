@@ -4,6 +4,7 @@ import com.lukeludonglai.eventflow.database.JpaEntityManagerFactory;
 import com.lukeludonglai.eventflow.domain.Event;
 import com.lukeludonglai.eventflow.domain.EventCategory;
 import com.lukeludonglai.eventflow.domain.EventStatus;
+import com.lukeludonglai.eventflow.helper.TestDataHelper;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,7 +35,7 @@ class HibernateEventRepositoryTest {
 
     @Test
     void shouldSaveAndFindEventById() {
-        Event event = createEvent();
+        Event event = TestDataHelper.createDefaultEvent();
 
         repository.save(event);
 
@@ -48,7 +49,7 @@ class HibernateEventRepositoryTest {
         );
 
         assertEquals(
-                "Hibernate Meetup",
+                "Test Event",
                 storedEvent.getTitle()
         );
 
@@ -60,25 +61,6 @@ class HibernateEventRepositoryTest {
         assertEquals(
                 50,
                 storedEvent.getAvailableTickets()
-        );
-    }
-
-    private Event createEvent() {
-        return new Event(
-                "Hibernate Meetup",
-                EventCategory.TECH,
-                ZonedDateTime.of(
-                        2026,
-                        12,
-                        20,
-                        18,
-                        0,
-                        0,
-                        0,
-                        ZoneId.of("Europe/Madrid")
-                ),
-                new BigDecimal("20.00"),
-                50
         );
     }
 }
