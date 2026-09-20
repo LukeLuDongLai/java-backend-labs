@@ -13,9 +13,13 @@ public class Event {
     @Id
     private UUID id;
 
+    @Version
+    @Column(nullable = false)
+    private long version;
+
     @Column(
             nullable = false,
-            length = 30
+            length = 50
     )
     private String title;
 
@@ -158,4 +162,6 @@ public class Event {
     public synchronized int getAvailableTickets() {
         return availableTickets;
     }
+
+    public long getVersion(){ return version; }
 }

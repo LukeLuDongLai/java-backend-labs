@@ -15,6 +15,10 @@ public class Booking {
     @Id
     private UUID id;
 
+    @Version
+    @Column(nullable = false)
+    private long version;
+
     @ManyToOne(
             fetch = FetchType.LAZY,
             optional = false
@@ -130,6 +134,10 @@ public class Booking {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public long getVersion() {
+        return version;
     }
 
 }

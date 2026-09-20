@@ -1,4 +1,4 @@
-package com.lukeludonglai.eventflow.service;
+package com.lukeludonglai.eventflow.concurrency.inmemory;
 
 import com.lukeludonglai.eventflow.domain.Booking;
 import com.lukeludonglai.eventflow.domain.BookingStatus;
@@ -14,6 +14,7 @@ import com.lukeludonglai.eventflow.repository.BookingRepository;
 import com.lukeludonglai.eventflow.repository.EventRepository;
 import com.lukeludonglai.eventflow.repository.inmemory.InMemoryBookingRepository;
 import com.lukeludonglai.eventflow.repository.inmemory.InMemoryEventRepository;
+import com.lukeludonglai.eventflow.service.BookingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
