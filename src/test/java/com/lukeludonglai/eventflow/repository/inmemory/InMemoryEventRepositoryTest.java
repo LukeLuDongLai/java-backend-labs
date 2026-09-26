@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 
+import static com.lukeludonglai.eventflow.helper.TestDataHelper.createDefaultEvent;
 import static org.junit.jupiter.api.Assertions.*;
 class InMemoryEventRepositoryTest {
     private InMemoryEventRepository repository;
@@ -17,23 +18,10 @@ class InMemoryEventRepositoryTest {
         repository = new InMemoryEventRepository();
     }
 
-    private Event createEvent() {
-        return new Event(
-                "Barcelona Java Meetup",
-                EventCategory.TECH,
-                ZonedDateTime.of(
-                        2026, 9, 20,
-                        18, 0, 0, 0,
-                        ZoneId.of("Europe/Madrid")
-                ),
-                new BigDecimal("20.00"),
-                50
-        );
-    }
 
     @Test
     void shouldFindEventById() {
-        Event event = createEvent();
+        Event event = createDefaultEvent();
         repository.save(event);
         Optional<Event> result = repository.findById(event.getId());
 
@@ -51,7 +39,7 @@ class InMemoryEventRepositoryTest {
 
     @Test
     void shouldFindAllEvents() {
-        Event event1 = createEvent();
+        Event event1 = createDefaultEvent();
         Event event2 = new Event(
                 "Montserrat Hiking",
                 EventCategory.HIKING,
@@ -81,7 +69,7 @@ class InMemoryEventRepositoryTest {
 
     @Test
     void shouldNotExposeInternalCollection() {
-        Event event = createEvent();
+        Event event = createDefaultEvent();
         repository.save(event);
 
         List<Event> result = repository.findAll();

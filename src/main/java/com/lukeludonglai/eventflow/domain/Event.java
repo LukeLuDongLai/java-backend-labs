@@ -1,18 +1,63 @@
 package com.lukeludonglai.eventflow.domain;
 
 import com.lukeludonglai.eventflow.exception.*;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "events")
 public class Event {
+    @Id
     private UUID id;
+
+    @Version
+    @Column(nullable = false)
+    private long version;
+
+    @Column(
+            nullable = false,
+            length = 50
+    )
     private String title;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            nullable = false,
+            length = 30
+    )
     private EventCategory category;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            nullable = false,
+            length = 30
+    )
     private EventStatus status;
+
+    @Column(
+            name = "starts_at",
+            nullable = false
+    )
     private ZonedDateTime startsAt;
+
+    @Column(
+            name = "unit_price",
+            nullable = false,
+            precision = 12,
+            scale = 2
+    )
     private BigDecimal unitPrice;
+
+    @Column(nullable = false)
     private int capacity;
+
+    @Column(
+            name = "available_tickets",
+            nullable = false
+    )
     private int availableTickets;
 
     public Event(
@@ -54,107 +99,10 @@ public class Event {
         this.capacity = capacity;
     }
 
-    public static Event rehydrate(
-            UUID id,
-            String title,
-            EventCategory category,
-            ZonedDateTime startsAt,
-            BigDecimal unitPrice,
-            int capacity,
-            int availableTickets,
-            EventStatus status
-    ){
-        return new Event(
-                id,
-                title,
-                category,
-                startsAt,
-                unitPrice,
-                capacity,
-                availableTickets,
-                status
-        );
+    protected Event(){
+        // Required by JPA
     }
 
-    private Event(
-            UUID id,
-            String title,
-            EventCategory category,
-            ZonedDateTime startsAt,
-            BigDecimal unitPrice,
-            int capacity,
-            int availableTickets,
-            EventStatus status
-    ){
-        if (id == null) {
-            throw new IllegalArgumentException(
-                    "Event ID must not be null"
-            );
-        }
-
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Event title must not be blank"
-            );
-        }
-
-        if (category == null) {
-            throw new IllegalArgumentException(
-                    "Event category must not be null"
-            );
-        }
-
-        if (startsAt == null) {
-            throw new IllegalArgumentException(
-                    "Event start time must not be null"
-            );
-        }
-
-        if (unitPrice == null) {
-            throw new IllegalArgumentException(
-                    "Unit price must not be null"
-            );
-        }
-
-        if (unitPrice.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException(
-                    "Unit price must not be negative"
-            );
-        }
-
-        if (capacity < 0) {
-            throw new IllegalArgumentException(
-                    "Capacity must not be negative"
-            );
-        }
-
-        if (availableTickets < 0) {
-            throw new IllegalArgumentException(
-                    "Available tickets must not be negative"
-            );
-        }
-
-        if (availableTickets > capacity) {
-            throw new IllegalArgumentException(
-                    "Available tickets must not exceed capacity"
-            );
-        }
-
-        if (status == null) {
-            throw new IllegalArgumentException(
-                    "Event status must not be null"
-            );
-        }
-
-        this.id = id;
-        this.title = title.strip();
-        this.category = category;
-        this.startsAt = startsAt;
-        this.unitPrice = unitPrice;
-        this.capacity = capacity;
-        this.availableTickets = availableTickets;
-        this.status = status;
-    }
 
     //Service functions
     public void publish() {
@@ -214,4 +162,6 @@ public class Event {
     public synchronized int getAvailableTickets() {
         return availableTickets;
     }
+
+    public long getVersion(){ return version; }
 }

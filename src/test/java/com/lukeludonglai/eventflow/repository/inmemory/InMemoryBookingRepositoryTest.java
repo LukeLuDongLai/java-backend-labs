@@ -3,6 +3,7 @@ package com.lukeludonglai.eventflow.repository.inmemory;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.lukeludonglai.eventflow.domain.Booking;
+import com.lukeludonglai.eventflow.helper.TestDataHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -85,7 +86,7 @@ class InMemoryBookingRepositoryTest {
 
     private Booking createBooking() {
         return new Booking(
-                UUID.randomUUID(),
+                TestDataHelper.createDefaultEvent(),
                 "customer@example.com",
                 2,
                 new BigDecimal("40.00")

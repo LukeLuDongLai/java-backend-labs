@@ -65,7 +65,7 @@ public class BookingService {
 
         event.reserveTickets(quantity);
 
-        Booking booking = new Booking(eventId, customerEmail, quantity, quote.finalTotal());
+        Booking booking = new Booking(event, customerEmail, quantity, quote.finalTotal());
 
         bookingPersistence.saveCreatedBooking(event, booking);
 
@@ -79,7 +79,7 @@ public class BookingService {
             );
         }
 
-        Booking booking = this.bookingRepository.findById(bookingId).orElseThrow(()-> new BookingNotFoundException(bookingId));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(()-> new BookingNotFoundException(bookingId));
         Event event = eventRepository.findById(booking.getEventId()).orElseThrow(()->new EventNotFoundException(booking.getEventId()));
 
         booking.cancel();

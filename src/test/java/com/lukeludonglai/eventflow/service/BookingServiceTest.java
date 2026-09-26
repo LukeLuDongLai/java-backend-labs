@@ -2,17 +2,11 @@ package com.lukeludonglai.eventflow.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.lukeludonglai.eventflow.database.JdbcConnectionFactory;
 import com.lukeludonglai.eventflow.persistence.BookingPersistence;
 import com.lukeludonglai.eventflow.persistence.inMemory.InMemoryBookingPersistence;
-import com.lukeludonglai.eventflow.persistence.jdbc.JdbcBookingPersistence;
-import com.lukeludonglai.eventflow.repository.jdbc.JdbcBookingRepository;
-import com.lukeludonglai.eventflow.repository.jdbc.JdbcEventRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
-import java.sql.*;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;

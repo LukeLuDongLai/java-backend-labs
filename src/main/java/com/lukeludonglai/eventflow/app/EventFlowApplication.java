@@ -1,25 +1,25 @@
 package com.lukeludonglai.eventflow.app;
 
 import com.lukeludonglai.eventflow.cli.EventFlowCli;
-import com.lukeludonglai.eventflow.database.JdbcConnectionFactory;
+import com.lukeludonglai.eventflow.database.JpaEntityManagerFactory;
 import com.lukeludonglai.eventflow.domain.Event;
 import com.lukeludonglai.eventflow.domain.EventCategory;
 import com.lukeludonglai.eventflow.persistence.BookingPersistence;
-import com.lukeludonglai.eventflow.persistence.jdbc.JdbcBookingPersistence;
+import com.lukeludonglai.eventflow.persistence.hibernate.HibernateBookingPersistence;
+
 import com.lukeludonglai.eventflow.pricing.PricingPolicy;
 import com.lukeludonglai.eventflow.pricing.StandardPricingPolicy;
 import com.lukeludonglai.eventflow.repository.BookingRepository;
 import com.lukeludonglai.eventflow.repository.EventRepository;
-import com.lukeludonglai.eventflow.repository.inmemory.InMemoryBookingRepository;
-import com.lukeludonglai.eventflow.repository.inmemory.InMemoryEventRepository;
-import com.lukeludonglai.eventflow.repository.jdbc.JdbcBookingRepository;
-import com.lukeludonglai.eventflow.repository.jdbc.JdbcEventRepository;
+import com.lukeludonglai.eventflow.repository.hibernate.HibernateBookingRepository;
+import com.lukeludonglai.eventflow.repository.hibernate.HibernateEventRepository;
+
 import com.lukeludonglai.eventflow.service.BookingService;
 import com.lukeludonglai.eventflow.service.EventSearchService;
 import com.lukeludonglai.eventflow.service.SalesReportService;
+import jakarta.persistence.EntityManagerFactory;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -29,16 +29,11 @@ import java.util.Scanner;
 public class EventFlowApplication {
 
     public static void main(String[] args) throws Exception{
-        JdbcConnectionFactory connectionFactory =
-                new JdbcConnectionFactory(
-                        System.getenv("DB_URL"),
-                        System.getenv("DB_USER"),
-                        System.getenv("DB_PASSWORD")
-                );
+        EntityManagerFactory emf = JpaEntityManagerFactory.create();
 
-        EventRepository eventRepository = new JdbcEventRepository(connectionFactory);
-        BookingRepository bookingRepository = new JdbcBookingRepository(connectionFactory);
-        BookingPersistence bookingPersistence = new JdbcBookingPersistence(connectionFactory);
+        EventRepository eventRepository = new HibernateEventRepository(emf);
+        BookingRepository bookingRepository = new HibernateBookingRepository(emf);
+        BookingPersistence bookingPersistence = new HibernateBookingPersistence(emf);
         PricingPolicy pricingPolicy = new StandardPricingPolicy();
         Clock clock = Clock.systemUTC();
 
